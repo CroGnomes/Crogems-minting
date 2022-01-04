@@ -1,2 +1,0 @@
-# ygame
-React Frontend
