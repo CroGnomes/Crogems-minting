@@ -3,11 +3,16 @@ header {
     padding : 0px;
     position: relative;
     display : flow-root;
+  
 
     .logo {
+        @media (max-width: 640px) {
+            display: none;
+        }
+
         position: absolute;
         top     : 18px;
-        left    : 18px;
+        left    : 4rem;
     }
 
     .header_menu {
@@ -35,7 +40,7 @@ header {
     .header_btn {
         position      : absolute;
         top           : 44px;
-        right         : 75px;
+        right         : 4rem;
         width         : 185px;
         min-height    : 54px;
         padding       : 4px 0;

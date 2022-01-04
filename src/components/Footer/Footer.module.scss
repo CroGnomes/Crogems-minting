@@ -47,7 +47,7 @@
 }
 .footerbottom_context {
     margin-top: 39px;
-    font-family: Montserrat;
+    font-family: Chewy;
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
@@ -70,4 +70,32 @@
     background: #EDEDED;
     box-shadow: inset 3px 4px 4px rgba(0, 0, 0, 0.23);
     border-radius :50%;
+}
+
+.social_info {
+    display: flex;
+    justify-content: center;
+    
+    a {
+        margin:80px 10px 80px 10px;
+        font-size: 24px !important;
+        border-radius: 50%;
+        padding: 0.5rem;
+        color: #d60d49;
+        background-color: hsla(0,0%,100%,.9);
+        transition: all .5s ease;
+        box-shadow: 0 1px 6px 0 #383838;
+
+        &:hover {
+            color: #fff;
+            background-color: #d60d49;
+        }
+
+        svg {
+            display: block;
+            vertical-align: middle;
+            font-size: 24px;
+        }
+    }
+    
 }

@@ -24,7 +24,7 @@ let provider = undefined;
 let signer = undefined;
 let contract = undefined;
 
-const CHAIN_ID = 338;
+// const CHAIN_ID = 338;
 
 const errors = [
  /*0*/ "The wrong network, please switch to the Cronos network.",
@@ -38,10 +38,12 @@ const errors = [
  /*8*/  "Your balance is not enough.",
  /*9*/  "You can buy a maximum of 4 Cronos.",
 /*10*/  "Oops. We find the unknown error. Please try again.",
+/*11*/  "Oops. Insufficient funds.",
 ]
 
 export const Home = () => {
-    const [input, setInput] = useState(10);
+    const [input, setInput] = useState(1);
+    const [count, setCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [connected, setConnected] = useState(false);
     const [signerAddress, setSignerAddress] = useState("");
@@ -56,7 +58,7 @@ export const Home = () => {
     const [decLoding, setDecLoading] = useState(false);
     const [locked, setLocked] = useState(true);
 
-    const CHAIN_ID = 25;
+    const CHAIN_ID = 338;
 
     const checkNetwork = async () => {
         web3 = new Web3(Web3.givenProvider);
@@ -70,14 +72,14 @@ export const Home = () => {
     }
 
 
-    const increse = () => {
+    const increase = () => {
         if (input < 10) {
             setInput(input + 1);
         }
     };
 
     const decrease = () => {
-        if (input >= 1) {
+        if (input > 1) {
             setInput(input - 1);
         }
     };
@@ -144,14 +146,25 @@ export const Home = () => {
     }
 
     const _mint = async () => {
-        toast.dismiss();
+      toast.dismiss();
         setIsLoading(true);
+      const addr = localStorage.getItem('wallet')
+      const balance = await getSignerBalance(addr);
+      
+        
         try {
           if (!await checkNetwork()) { setIsLoading(false); return; }
           if (!await getSignerAddress()) throw 1;
 
           const accounts = localStorage.getItem('wallet');
-          const value = input * 275 ;
+          const value = input * 2 ;
+
+          if(value > balance) {
+            errorAlert(errors[11]);
+            setIsLoading(false);
+            return;
+          }  
+
           await contractConfig.methods.mint(input).send({
                 from : accounts,
                 value: web3.utils.toWei(value.toString(), 'ether')
@@ -164,7 +177,7 @@ export const Home = () => {
               </Typography>,
             html:
               <Typography component="p">
-                You got the Cronos.
+                You adopted a Crognome{input == 1 ? '' : 's'}.
               </Typography>,
             icon: 'success'
           })
@@ -192,8 +205,12 @@ export const Home = () => {
         const addr = localStorage.getItem('wallet')
         console.log('address:',addr)
         if(!!addr) {
-            handleConnect()
+            await handleConnect()
         }
+
+         const cnt = await contractConfig.methods.totalSupply().call();
+        console.log('count', cnt);
+        setCount(cnt);
     }, [])
 
     useEffect(async () => {
@@ -228,14 +245,18 @@ export const Home = () => {
                     <div className={Styles.home_amount_title}>
                         Amount
                     </div>
-                    <div className={Styles.home_amount}>
-                        <button onClick={decrease}></button>
-                        <input value={input} defaultValue={10} />
-                        <button onClick={increse}></button>
-                        <a onClick={getmax}>Get Max</a>
+                    <div className={Styles.home_amount_wrap}>
+                      <div className={Styles.home_amount}>
+                          <button onClick={decrease} onTouch={decrease}></button>
+                          <input value={input} defaultValue={10} />
+                          <button onClick={increase} onTouch={increase}></button>
+                          
+                      </div>
+                      <a onClick={getmax} onTouch={getmax} >Get Max</a>
                     </div>
+                    
                     <div className={Styles.home_total}>
-                        Total {Math.round(275 * input * 100) / 100} CRO
+                        Total {Math.round(2 * input * 100) / 100} CRO
                     </div>
                     <div className={Styles.home_mint}>
                         <button className={Styles.mint_btn} onClick={_mint}>
@@ -246,13 +267,14 @@ export const Home = () => {
                         <div className={Styles.available_container}>
                             <div className={Styles.available}>
                                 <div className={Styles.available_first}>Available</div>
-                                <div className={Styles.available_second}>2.000 / 2.000</div>
-                                <div>
+                                <div className={Styles.available_second}>{ 2000 - count} / 2000</div>
+                                
+                            </div>
+                            <div className={Styles.img_group}>
                                     <img className={Styles.available_img1} src={getImg('home/Export-1.png')} alt="Logo" />
                                     <img className={Styles.available_img2} src={getImg('home/Export-2.png')} alt="Logo" />
                                     <img className={Styles.available_img3} src={getImg('home/Export-3.png')} alt="Logo" />
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
